@@ -1,7 +1,6 @@
 {
-  "functions": {
-    "index.js": {
-      "runtime": "@vercel/node@2"
-    }
-  }
+  "rewrites": [
+    { "source": "/api/sim", "destination": "/api/sim.js" },
+    { "source": "/(.*)", "destination": "/index.js" }
+  ]
 }
