@@ -7,6 +7,15 @@ module.exports = async (req, res) => {
   const { q, number, cnic } = req.query;
   const searchQuery = q || number || cnic;
 
+  // Branding
+  const BRANDING = {
+    developed_by: "HJ-HACKER",
+    whatsapp_channel: "https://whatsapp.com/channel/0029VbAaNJ6C1FuB0mIAx93M",
+    main_site: "https://hamza-jutt-7d6.pages.dev/",
+    note: "🔥 Follow HJ-HACKER for more tools, apps & tech updates!",
+    version: "1.0.0"
+  };
+
   if (!searchQuery) {
     return res.status(400).json({
       success: false,
@@ -14,7 +23,8 @@ module.exports = async (req, res) => {
       usage: {
         by_phone: '/api/sim?q=03001234567',
         by_cnic: '/api/sim?q=12345-1234567-1'
-      }
+      },
+      credits: BRANDING
     });
   }
 
@@ -33,6 +43,7 @@ module.exports = async (req, res) => {
       return res.status(404).json({
         success: false,
         error: 'No records found',
+        credits: BRANDING,
         query: cleanQuery
       });
     }
@@ -41,11 +52,7 @@ module.exports = async (req, res) => {
     const firstRecord = records[0] || {};
 
     res.json({
-      credits: {
-        developed_by: "HJ-HACKER",
-        whatsapp_channel: "https://whatsapp.com/channel/0029VbAaNJ6C1FuB0mIAx93M",
-        main_site: "https://hamza-jutt-7d6.pages.dev/"
-      },
+      credits: BRANDING,
       status: true,
       results: {
         status: true,
@@ -74,7 +81,7 @@ module.exports = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch SIM database records',
-      details: error.message
+      credits: BRANDING
     });
   }
 };
