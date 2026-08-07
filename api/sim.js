@@ -16,38 +16,52 @@ module.exports = async (req, res) => {
     version: "1.0.0"
   };
 
+  // Check if search query is provided
   if (!searchQuery) {
     return res.status(400).json({
       success: false,
       error: 'Search parameter is required',
       usage: {
         by_phone: '/api/sim?q=03001234567',
-        by_cnic: '/api/sim?q=12345-1234567-1'
+        by_phone_no_zero: '/api/sim?q=3001234567',
+        by_cnic: '/api/sim?q=12345-1234567-1',
+        by_cnic_no_dashes: '/api/sim?q=1234512345671'
       },
-      credits: BRANDING
+      credits: BRANDING,
+      example: '/api/sim?q=3035481601'
     });
   }
 
   try {
     const cleanQuery = searchQuery.toString().trim();
+    console.log('📱 SIM Search Query:', cleanQuery);
+
+    // Call the external SIM database API
     const apiUrl = `https://fam-official.serv00.net/api/database.php?q=${encodeURIComponent(cleanQuery)}`;
+    console.log('🔄 Calling SIM Database API:', apiUrl);
 
     const response = await axios.get(apiUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'application/json'
+      },
       timeout: 15000
     });
 
     const data = response.data;
+    console.log('✅ SIM API Response received');
 
+    // Check if records found
     if (!data.success || !data.data || data.data.records_count === 0) {
       return res.status(404).json({
         success: false,
-        error: 'No records found',
+        error: 'No records found for the provided query',
         credits: BRANDING,
         query: cleanQuery
       });
     }
 
+    // Format response
     const records = data.data.records || [];
     const firstRecord = records[0] || {};
 
@@ -78,10 +92,25 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
+    console.error('❌ SIM Database Error:', error.message);
+    
+    let errorMessage = 'Failed to fetch SIM database records. Please try again later.';
+    if (error.code === 'ECONNABORTED') {
+      errorMessage = 'Request timeout. The SIM database server is taking too long to respond.';
+    } else if (error.response?.status === 404) {
+      errorMessage = 'SIM database endpoint not found. Please check the API URL.';
+    } else if (error.response?.status === 500) {
+      errorMessage = 'SIM database server error. Please try again later.';
+    }
+
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch SIM database records',
-      credits: BRANDING
+      error: errorMessage,
+      credits: BRANDING,
+      debug: {
+        query: cleanQuery,
+        error_details: error.message
+      }
     });
   }
 };
