@@ -18,9 +18,32 @@ const BRANDING = {
 };
 
 // ============================================================
-// ===== SIM DATABASE API =====
+// ===== HOME PAGE (No Data) =====
 // ============================================================
+app.get('/', (req, res) => {
+  res.json({
+    name: "HJ-HACKER SIM Database API",
+    version: "1.0.0",
+    status: "🟢 Online",
+    developer: "HJ-HACKER",
+    website: "https://hamza-jutt-7d6.pages.dev/",
+    whatsapp: "https://whatsapp.com/channel/0029VbAaNJ6C1FuB0mIAx93M",
+    endpoints: {
+      sim_database: "/api/sim?q=PHONE_NUMBER_OR_CNIC"
+    },
+    examples: {
+      by_phone: "/api/sim?q=03001234567",
+      by_phone_no_zero: "/api/sim?q=3001234567",
+      by_cnic: "/api/sim?q=12345-1234567-1",
+      by_cnic_no_dashes: "/api/sim?q=1234512345671"
+    },
+    message: "Add ?q=NUMBER to search SIM database"
+  });
+});
 
+// ============================================================
+// ===== SIM DATABASE API (Only Shows Data When Query Given) =====
+// ============================================================
 app.get('/api/sim', async (req, res) => {
   const { q, number, cnic } = req.query;
 
@@ -31,13 +54,15 @@ app.get('/api/sim', async (req, res) => {
     return res.status(400).json({
       success: false,
       error: 'Search parameter is required',
+      message: 'Please provide a phone number or CNIC to search',
       usage: {
         by_phone: '/api/sim?q=03001234567',
         by_phone_no_zero: '/api/sim?q=3001234567',
         by_cnic: '/api/sim?q=12345-1234567-1',
         by_cnic_no_dashes: '/api/sim?q=1234512345671'
       },
-      credits: BRANDING
+      credits: BRANDING,
+      example: '/api/sim?q=3035481601'
     });
   }
 
@@ -70,7 +95,7 @@ app.get('/api/sim', async (req, res) => {
       });
     }
 
-    // ===== FORMAT RESPONSE - WITHOUT FAMOFC =====
+    // ===== FORMAT RESPONSE - ONLY WHEN DATA FOUND =====
     const records = data.data.records || [];
     const firstRecord = records[0] || {};
 
@@ -125,37 +150,15 @@ app.get('/api/sim', async (req, res) => {
 });
 
 // ============================================================
-// ===== HEALTH CHECK =====
-// ============================================================
-app.get('/', (req, res) => {
-  res.json({
-    name: "HJ-HACKER SIM Database API",
-    version: "1.0.0",
-    status: "🟢 Online",
-    developer: "HJ-HACKER",
-    website: "https://hamza-jutt-7d6.pages.dev/",
-    whatsapp: "https://whatsapp.com/channel/0029VbAaNJ6C1FuB0mIAx93M",
-    endpoints: {
-      sim_database: "/api/sim?q=PHONE_NUMBER_OR_CNIC"
-    },
-    examples: {
-      by_phone: "/api/sim?q=03001234567",
-      by_phone_no_zero: "/api/sim?q=3001234567",
-      by_cnic: "/api/sim?q=12345-1234567-1",
-      by_cnic_no_dashes: "/api/sim?q=1234512345671"
-    }
-  });
-});
-
-// ============================================================
 // ===== 404 HANDLER =====
 // ============================================================
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    error: 'Endpoint not found. Available endpoint: /api/sim',
+    error: 'Endpoint not found. Available endpoints: /, /api/sim',
     credits: BRANDING,
     available_endpoints: {
+      home: "/",
       sim: "/api/sim?q=PHONE_NUMBER_OR_CNIC"
     },
     examples: {
