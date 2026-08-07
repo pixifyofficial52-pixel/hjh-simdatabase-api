@@ -1,9 +1,4 @@
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.json({
     name: "HJ-HACKER SIM Database API",
     version: "1.0.0",
     status: "🟢 Online",
