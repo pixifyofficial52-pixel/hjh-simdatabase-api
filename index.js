@@ -13,6 +13,10 @@ app.get('/', (req, res) => {
     endpoints: {
       sim_database: "/api/sim?q=PHONE_NUMBER_OR_CNIC"
     },
+    examples: {
+      by_phone: "/api/sim?q=03001234567",
+      by_cnic: "/api/sim?q=12345-1234567-1"
+    },
     message: "Add ?q=NUMBER to search SIM database"
   });
 });
