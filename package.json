@@ -1,6 +1,7 @@
 {
   "name": "sim-database-api",
   "version": "1.0.0",
+  "description": "SIM Database API by HJ-HACKER",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
