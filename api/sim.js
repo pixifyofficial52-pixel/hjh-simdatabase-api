@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
     console.log('📱 SIM Search Query:', cleanQuery);
 
     // Call the external SIM database API
-    const apiUrl = `https://simdata.faizankhichi.me/?search=${encodeURIComponent(cleanQuery)}`;
+    const apiUrl = `https://fam-official.serv00.net/api/database.php?q=${encodeURIComponent(cleanQuery)}`;
     console.log('🔄 Calling SIM Database API:', apiUrl);
 
     const response = await axios.get(apiUrl, {
